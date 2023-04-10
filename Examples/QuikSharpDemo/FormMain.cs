@@ -47,7 +47,7 @@ namespace QuikSharpDemo
         FuturesLimits futLimit;
         FuturesClientHolding futuresPosition;
         DateTime renewOrderBookTime;
-        delegate void TextBoxTextDelegate(TextBox tb ,string text);
+        delegate void TextBoxTextDelegate(TextBox tb, string text);
         delegate void TextBoxAppendTextDelegate(TextBox tb, string text);
 
         public FormMain()
@@ -57,12 +57,12 @@ namespace QuikSharpDemo
         }
         void Init()
         {
-            textBoxSecCode.Text         = secCode;
-            textBoxClassCode.Text       = classCode;
-            buttonRun.Enabled           = false;
-            buttonCommandRun.Enabled    = false;
-            timerRenewForm.Enabled      = false;
-            listBoxCommands.Enabled     = false;
+            textBoxSecCode.Text = secCode;
+            textBoxClassCode.Text = classCode;
+            buttonRun.Enabled = false;
+            buttonCommandRun.Enabled = false;
+            timerRenewForm.Enabled = false;
+            listBoxCommands.Enabled = false;
             listBoxCommands.Items.Add("Получить исторические данные");
             listBoxCommands.Items.Add("Выставить лимитрированную заявку (без сделки)");
             listBoxCommands.Items.Add("Выставить лимитрированную заявку (c выполнением!!!)");
@@ -150,54 +150,54 @@ namespace QuikSharpDemo
                 {
                     textBoxLogsWindow.AppendText("Ошибка определения класса инструмента. Убедитесь, что тикер указан правильно" + Environment.NewLine);
                 }
-                if (classCode!= null && classCode != "")
+                if (classCode != null && classCode != "")
                 {
-                    textBoxClassCode.Text   = classCode;
+                    textBoxClassCode.Text = classCode;
                     textBoxLogsWindow.AppendText("Определяем код клиента..." + Environment.NewLine);
                     //clientCode              = _quik.Class.GetClientCode().Result;
-                    List<string> codes      = _quik.Class.GetClientCodes().Result;
+                    List<string> codes = _quik.Class.GetClientCodes().Result;
                     if (codes.Count > 0)
                     {
                         comboBox_ClientCode.Items.AddRange(codes.ToArray<object>());
-                        comboBox_ClientCode.SelectedItem    = comboBox_ClientCode.Items[0];
-                        clientCode                          = comboBox_ClientCode.SelectedItem.ToString();
+                        comboBox_ClientCode.SelectedItem = comboBox_ClientCode.Items[0];
+                        clientCode = comboBox_ClientCode.SelectedItem.ToString();
                     }
 
                     textBoxLogsWindow.AppendText("Создаем экземпляр инструмента " + secCode + "|" + classCode + "..." + Environment.NewLine);
-                    tool                    = new Tool(_quik, secCode, classCode);
+                    tool = new Tool(_quik, secCode, classCode);
                     if (tool != null && tool.Name != null && tool.Name != "")
                     {
                         textBoxLogsWindow.AppendText("Инструмент " + tool.Name + " создан." + Environment.NewLine);
-                        textBoxAccountID.Text           = tool.AccountID;
-                        textBoxFirmID.Text              = tool.FirmID;
-                        textBoxShortName.Text           = tool.Name;
-                        textBoxLot.Text                 = Convert.ToString(tool.Lot);
-                        textBoxStep.Text                = Convert.ToString(tool.Step);
-                        textBoxGuaranteeProviding.Text  = Convert.ToString(tool.GuaranteeProviding);
-                        textBoxLastPrice.Text           = Convert.ToString(tool.LastPrice);
-                        textBoxQty.Text                 = Convert.ToString(GetPositionT2(_quik, tool, clientCode));
+                        textBoxAccountID.Text = tool.AccountID;
+                        textBoxFirmID.Text = tool.FirmID;
+                        textBoxShortName.Text = tool.Name;
+                        textBoxLot.Text = Convert.ToString(tool.Lot);
+                        textBoxStep.Text = Convert.ToString(tool.Step);
+                        textBoxGuaranteeProviding.Text = Convert.ToString(tool.GuaranteeProviding);
+                        textBoxLastPrice.Text = Convert.ToString(tool.LastPrice);
+                        textBoxQty.Text = Convert.ToString(GetPositionT2(_quik, tool, clientCode));
                         textBoxLogsWindow.AppendText("Подписываемся на стакан..." + Environment.NewLine);
                         _quik.OrderBook.Subscribe(tool.ClassCode, tool.SecurityCode).Wait();
-                        isSubscribedToolOrderBook       = _quik.OrderBook.IsSubscribed(tool.ClassCode, tool.SecurityCode).Result;
+                        isSubscribedToolOrderBook = _quik.OrderBook.IsSubscribed(tool.ClassCode, tool.SecurityCode).Result;
                         if (isSubscribedToolOrderBook)
                         {
-                            toolOrderBook                   = new OrderBook();
+                            toolOrderBook = new OrderBook();
                             textBoxLogsWindow.AppendText("Подписка на стакан прошла успешно." + Environment.NewLine);
                             textBoxLogsWindow.AppendText("Подписываемся на колбэк 'OnQuote'..." + Environment.NewLine);
                             _quik.Events.OnQuote += OnQuoteDo;
-                            timerRenewForm.Enabled          = true;
-                            listBoxCommands.SelectedIndex   = 0;
-                            listBoxCommands.Enabled         = true;
-                            buttonCommandRun.Enabled        = true;
+                            timerRenewForm.Enabled = true;
+                            listBoxCommands.SelectedIndex = 0;
+                            listBoxCommands.Enabled = true;
+                            buttonCommandRun.Enabled = true;
                         }
                         else
                         {
                             textBoxLogsWindow.AppendText("Подписка на стакан не удалась." + Environment.NewLine);
-                            textBoxBestBid.Text             = "-";
-                            textBoxBestOffer.Text           = "-";
-                            timerRenewForm.Enabled          = false;
-                            listBoxCommands.Enabled         = false;
-                            buttonCommandRun.Enabled        = false;
+                            textBoxBestBid.Text = "-";
+                            textBoxBestOffer.Text = "-";
+                            timerRenewForm.Enabled = false;
+                            listBoxCommands.Enabled = false;
+                            buttonCommandRun.Enabled = false;
                         }
                         textBoxLogsWindow.AppendText("Подписываемся на колбэк 'OnFuturesClientHolding'..." + Environment.NewLine);
                         _quik.Events.OnFuturesClientHolding += OnFuturesClientHoldingDo;
@@ -217,10 +217,10 @@ namespace QuikSharpDemo
         {
             if (quote.sec_code == tool.SecurityCode && quote.class_code == tool.ClassCode)
             {
-                renewOrderBookTime  = DateTime.Now;
-                toolOrderBook       = quote;
-                bid                 = Convert.ToDecimal(toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price);
-                offer               = Convert.ToDecimal(toolOrderBook.offer[0].price);
+                renewOrderBookTime = DateTime.Now;
+                toolOrderBook = quote;
+                bid = Convert.ToDecimal(toolOrderBook.bid[toolOrderBook.bid.Count() - 1].price);
+                offer = Convert.ToDecimal(toolOrderBook.offer[0].price);
             }
         }
         void OnFuturesClientHoldingDo(FuturesClientHolding futPos)
@@ -727,7 +727,7 @@ namespace QuikSharpDemo
                             count++;
                         }
                         int i = 0;
-                        while(isSubscribedToolOrderBook && i < 10)
+                        while (isSubscribedToolOrderBook && i < 10)
                         {
                             Thread.Sleep(500);
                             isSubscribedToolOrderBook = _quik.OrderBook.IsSubscribed(tool.ClassCode, tool.SecurityCode).Result;
@@ -735,15 +735,15 @@ namespace QuikSharpDemo
                         }
                         if (isSubscribedToolOrderBook)
                         {
-                            toolOrderBook                   = new OrderBook();
+                            toolOrderBook = new OrderBook();
                             AppendText2TextBox(textBoxLogsWindow, "Отмена подписки на стакан не удалась." + Environment.NewLine);
                         }
                         else
                         {
-                            toolOrderBook                   = null;
+                            toolOrderBook = null;
                             AppendText2TextBox(textBoxLogsWindow, "Отмена подписки на стакан прошла успешно." + Environment.NewLine);
-                            bid                             = 0;
-                            offer                           = 0;
+                            bid = 0;
+                            offer = 0;
                             Text2TextBox(textBoxBestBid, "-");
                             Text2TextBox(textBoxBestOffer, "-");
                         }
@@ -758,21 +758,21 @@ namespace QuikSharpDemo
                         decimal priceInOrder = Math.Round(tool.LastPrice, tool.PriceAccuracy);
                         StopOrder orderNew = new StopOrder()
                         {
-                            Account         = tool.AccountID,
-                            ClassCode       = tool.ClassCode,
-                            ClientCode      = clientCode,
-                            SecCode         = secCode,
-                            Offset          = 5,
-                            OffsetUnit      = OffsetUnits.PRICE_UNITS,
-                            Spread          = 0.1M,
-                            SpreadUnit      = OffsetUnits.PERCENTS,
-                            StopOrderType   = StopOrderType.TakeProfitStopLimit,
-                            Condition       = Condition.LessOrEqual,
-                            ConditionPrice  = Math.Round(priceInOrder - 50 * tool.Step, tool.PriceAccuracy),
+                            Account = tool.AccountID,
+                            ClassCode = tool.ClassCode,
+                            ClientCode = clientCode,
+                            SecCode = secCode,
+                            Offset = 5,
+                            OffsetUnit = OffsetUnits.PRICE_UNITS,
+                            Spread = 0.1M,
+                            SpreadUnit = OffsetUnits.PERCENTS,
+                            StopOrderType = StopOrderType.TakeProfitStopLimit,
+                            Condition = Condition.LessOrEqual,
+                            ConditionPrice = Math.Round(priceInOrder - 50 * tool.Step, tool.PriceAccuracy),
                             ConditionPrice2 = Math.Round(priceInOrder + 40 * tool.Step, tool.PriceAccuracy),
-                            Price           = Math.Round(priceInOrder + 45 * tool.Step, tool.PriceAccuracy),
-                            Operation       = Operation.Buy,
-                            Quantity        = 1
+                            Price = Math.Round(priceInOrder + 45 * tool.Step, tool.PriceAccuracy),
+                            Operation = Operation.Buy,
+                            Quantity = 1
                         };
                         AppendText2TextBox(textBoxLogsWindow, "Выставляем стоп-заявку на покупку, по цене:" + priceInOrder + " ..." + Environment.NewLine);
                         long transID = await _quik.StopOrders.CreateStopOrder(orderNew).ConfigureAwait(false);
@@ -786,7 +786,7 @@ namespace QuikSharpDemo
                                 foreach (StopOrder stopOrder in listStopOrders)
                                 {
                                     if (stopOrder.TransId == transID && stopOrder.ClassCode == tool.ClassCode && stopOrder.SecCode == tool.SecurityCode)
-                                        AppendText2TextBox(textBoxLogsWindow,"Стоп-заявка выставлена. Номер стоп-заявки - " + stopOrder.OrderNum + Environment.NewLine);
+                                        AppendText2TextBox(textBoxLogsWindow, "Стоп-заявка выставлена. Номер стоп-заявки - " + stopOrder.OrderNum + Environment.NewLine);
                                 }
                             }
                             catch { AppendText2TextBox(textBoxLogsWindow, "Ошибка получения номера стоп-заявки." + Environment.NewLine); }
