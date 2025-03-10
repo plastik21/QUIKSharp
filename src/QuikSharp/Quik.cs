@@ -21,41 +21,6 @@ namespace QuikSharp
         public const string DefaultHost = "127.0.0.1";
 
         /// <summary>
-        /// Quik interface in .NET constructor
-        /// </summary>
-        public Quik(int port = DefaultPort, IPersistentStorage storage = null, string host = DefaultHost)
-        {
-            Storage = storage == null ? new InMemoryStorage() : storage;
-            QuikService = QuikService.Create(port, host);
-            // poor man's DI
-            QuikService.Storage = Storage;
-            Events = QuikService.Events;
-            Debug = new DebugFunctions(port, host);
-            Service = new ServiceFunctions(port, host);
-            Class = new ClassFunctions(port, host);
-            OrderBook = new OrderBookFunctions(port, host);
-            Trading = new TradingFunctions(port, host);
-            StopOrders = new StopOrderFunctions(port, this, host);
-            Orders = new OrderFunctions(port, this, host);
-            Candles = new CandleFunctions(port, host);
-            QuikService.Candles = Candles;
-            QuikService.StopOrders = StopOrders;
-            QuikService.WorkingFolder = Service.GetWorkingFolder().Result;
-        }
-
-        // Если запуск "сервиса" (потоков работы с Lua) происходит в конструкторе Quik, то возможности остановить "сервис" нет.
-        // QuikService объявлен как private.
-        public void StopService()
-        {
-            QuikService.Stop();
-        }
-
-        public bool IsServiceConnected()
-        {
-            return QuikService.IsServiceConnected();
-        }
-
-        /// <summary>
         /// Default timeout to use for send operations if no specific timeout supplied.
         /// </summary>
         public TimeSpan DefaultSendTimeout
@@ -64,7 +29,7 @@ namespace QuikSharp
             set => QuikService.DefaultSendTimeout = value;
         }
 
-        private QuikService QuikService { get; set; }
+        public bool IsServiceConnected => QuikService.IsServiceConnected();
 
         /// <summary>
         /// Quik current data is all in local time. This property allows to convert it to UTC datetime
@@ -120,5 +85,48 @@ namespace QuikSharp
         /// Функции для работы со свечами
         /// </summary>
         public CandleFunctions Candles { get; private set; }
+
+        /// <summary>
+        /// Сервис
+        /// </summary>
+        private QuikService QuikService { get; set; }
+
+        /// <summary>
+        /// Quik interface in .NET constructor
+        /// </summary>
+        public Quik(int port = DefaultPort, IPersistentStorage storage = null, string host = DefaultHost)
+        {
+            Storage = storage ?? new InMemoryStorage();
+
+            QuikService = QuikService.Create(port, host);
+            QuikService.Storage = Storage;
+            QuikService.Candles = new CandleFunctions(port, host);
+            QuikService.StopOrders = new StopOrderFunctions(port, this, host);
+
+            Events = QuikService.Events;
+            Candles = QuikService.Candles;
+            StopOrders = QuikService.StopOrders;
+            Debug = new DebugFunctions(port, host);
+            Service = new ServiceFunctions(port, host);
+            Class = new ClassFunctions(port, host);
+            OrderBook = new OrderBookFunctions(port, host);
+            Trading = new TradingFunctions(port, host);
+            Orders = new OrderFunctions(port, this, host);
+
+            Events.OnConnectedToQuik += (_) =>
+            {
+                QuikService.WorkingFolder = Service.GetWorkingFolder().Result;
+            };
+        }
+
+        public void Start()
+        {
+            QuikService.Start();
+        }
+
+        public void Stop()
+        {
+            QuikService.Stop();
+        }
     }
 }
