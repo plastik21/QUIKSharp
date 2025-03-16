@@ -178,7 +178,7 @@ namespace QuikSharp
                         try
                         {
                             using (var stream = new NetworkStream(_responseClient.Client))
-                            using (var writer = new StreamWriter(stream))
+                            using (var writer = new StreamWriter(stream, Encoding.GetEncoding(1251)))
                             {
                                 while (!_cts.IsCancellationRequested)
                                 {

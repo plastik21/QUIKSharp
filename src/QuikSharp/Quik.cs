@@ -119,12 +119,12 @@ namespace QuikSharp
             };
         }
 
-        public void Start()
+        public void StartService()
         {
             QuikService.Start();
         }
 
-        public void Stop()
+        public void StopService()
         {
             QuikService.Stop();
         }
