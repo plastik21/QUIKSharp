@@ -90,8 +90,13 @@ namespace QuikSharp
             //["MARKET_TAKE_PROFIT"]="YES",
             //["STOPPRICE2"]=tostring(SysFunc.toPrice(SecCode,StopLoss)),
             //["EXECUTION_CONDITION"] = "FILL_OR_KILL",
+            //
 
-            return await Quik.Trading.SendTransaction(newStopOrderTransaction).ConfigureAwait(false);
+            var transId = await Quik.Trading.SendTransaction(newStopOrderTransaction).ConfigureAwait(false);
+
+            stopOrder.Comment = newStopOrderTransaction.ErrorMessage;
+
+            return transId;
         }
 
         private StopOrderKind ConvertStopOrderType(StopOrderType stopOrderType)
