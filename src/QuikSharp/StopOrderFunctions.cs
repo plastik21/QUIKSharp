@@ -68,6 +68,7 @@ namespace QuikSharp
                 STOP_ORDER_KIND = ConvertStopOrderType(stopOrder.StopOrderType),
                 OPERATION = stopOrder.Operation == Operation.Buy ? TransactionOperation.B : TransactionOperation.S
             };
+
             if (stopOrder.StopOrderType == StopOrderType.TakeProfit || stopOrder.StopOrderType == StopOrderType.TakeProfitStopLimit)
             {
                 newStopOrderTransaction.OFFSET = stopOrder.Offset;
@@ -129,7 +130,15 @@ namespace QuikSharp
                 SECCODE = stopOrder.SecCode,
                 STOP_ORDER_KEY = stopOrder.OrderNum.ToString()
             };
-            return await Quik.Trading.SendTransaction(killStopOrderTransaction).ConfigureAwait(false);
+
+            var transId = await Quik.Trading.SendTransaction(killStopOrderTransaction).ConfigureAwait(false);
+
+            if (transId <= 0)
+            {
+                stopOrder.Comment = killStopOrderTransaction.ErrorMessage;
+            }
+
+            return transId;
         }
     }
 }
