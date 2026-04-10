@@ -82,5 +82,18 @@ namespace QuikSharp.DataStructures
         /// </summary>
         [JsonProperty("min_price_step")]
         public double MinPriceStep { get; set; }
+
+        /// <summary>
+        /// Код котируемой валюты в паре
+        /// </summary>
+        [JsonProperty("first_currcode")]
+        public string FirstCurrCode { get; set; }
+
+        /// <summary>
+        /// Код базовой валюты в паре
+        /// </summary>
+        [JsonProperty("second_currcode")]
+        public string SecondCurrCode { get; set; }
+
     }
 }
